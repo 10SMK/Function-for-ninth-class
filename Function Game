@@ -1,0 +1,2441 @@
+Aku akan buat setiap level punya identitas kota sendiri, bukan hanya mengganti rumus: tema visual, warna jalan, landmark, suasana langit, dan posisi bangunan akan ikut berubah. Rumusnya juga akan naik dari linear ke kuadrat, bentuk kuadrat bergeser, hingga fungsi kubik.
+
+Aku akan ambil versi terbaru `index.html` yang sedang dipakai, lalu menuliskannya kembali sebagai satu file utuh agar bisa langsung kamu salin. Aku juga akan memastikan perubahan level dan tema peta terbaru ikut masuk.
+
+Berikut bentuk lengkap `index.html` terbaru. File ini sudah mencakup kontrol HP, lima level fungsi, tema peta berbeda di setiap level, landmark kota, skor, nyawa, dan teka-teki pilihan ganda.
+
+
+
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courier Quest: Misi Fungsi</title>
+  <style>
+    :root {
+      --ink: #202b3a;
+      --muted: #667085;
+      --paper: #ffffff;
+      --sky: #cceefa;
+      --yellow: #ffd766;
+      --orange: #f28c52;
+      --red: #e76868;
+      --green: #4caa78;
+      --shadow: 0 6px 0 rgba(32, 43, 58, .16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 7% 10%, rgba(255, 255, 255, .85) 0 42px, transparent 43px),
+        radial-gradient(circle at 93% 17%, rgba(255, 255, 255, .65) 0 52px, transparent 53px),
+        linear-gradient(145deg, #bcebf5 0%, #fff2cf 54%, #c7ebcb 100%);
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1440px, 100%);
+      min-height: 100vh;
+      margin: auto;
+      padding: 14px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 56px;
+      border: 3px solid var(--ink);
+      border-radius: 16px;
+      background: var(--yellow);
+      box-shadow: var(--shadow);
+      font-size: 29px;
+    }
+
+    .eyebrow {
+      margin: 0 0 3px;
+      color: #805e1e;
+      font-size: .7rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: clamp(1.25rem, 2.4vw, 2rem);
+      line-height: 1;
+    }
+
+    .top-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .badge {
+      min-height: 41px;
+      padding: 9px 13px;
+      border: 3px solid var(--ink);
+      border-radius: 12px;
+      background: var(--paper);
+      box-shadow: 3px 3px 0 rgba(32, 43, 58, .14);
+      font-size: .84rem;
+      font-weight: 900;
+    }
+
+    .badge strong {
+      color: #9b6512;
+    }
+
+    .hearts {
+      letter-spacing: 2px;
+    }
+
+    .heart-off {
+      opacity: .24;
+      filter: grayscale(1);
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: 275px minmax(550px, 1fr) 250px;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .card {
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .95);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-heading {
+      margin: 0;
+      padding: 12px 14px;
+      border-bottom: 3px solid var(--ink);
+      background: var(--sky);
+      font-size: .95rem;
+      line-height: 1.1;
+    }
+
+    .card-heading small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: .7rem;
+    }
+
+    .mission-card {
+      min-height: 640px;
+    }
+
+    .mission-body {
+      padding: 14px;
+    }
+
+    .mission-intro {
+      margin-bottom: 12px;
+      padding: 11px;
+      border-radius: 12px;
+      background: #fff4bf;
+      font-size: .83rem;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+
+    .objective {
+      padding: 12px;
+      border: 2px dashed #c28c22;
+      border-radius: 14px;
+      background: #fffdf3;
+    }
+
+    .objective-label {
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .objective-value {
+      margin: 5px 0;
+      color: #af7113;
+      font-size: 2rem;
+      font-weight: 900;
+    }
+
+    .objective-status {
+      min-height: 34px;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .route-box {
+      position: relative;
+      margin-top: 14px;
+      padding: 14px 10px;
+      border-radius: 12px;
+      background: #f0f6f2;
+    }
+
+    .route-step {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 58px;
+      font-size: .79rem;
+      font-weight: 900;
+    }
+
+    .route-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 16px;
+      top: 36px;
+      width: 3px;
+      height: 29px;
+      border-left: 3px dashed #82a69b;
+    }
+
+    .route-icon {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      flex: 0 0 35px;
+      width: 35px;
+      height: 35px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: var(--paper);
+      font-size: 1.1rem;
+    }
+
+    .route-step.active .route-icon {
+      background: var(--yellow);
+    }
+
+    .route-step.done .route-icon {
+      background: #bcebb8;
+    }
+
+    .route-step span {
+      line-height: 1.25;
+    }
+
+    .tips {
+      margin-top: 14px;
+      padding: 11px;
+      border-radius: 12px;
+      background: #e8f5ff;
+      color: #42627e;
+      font-size: .75rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .map-card {
+      position: relative;
+      min-height: 640px;
+      padding: 10px;
+      border: 3px solid var(--ink);
+      border-radius: 18px;
+      background: #8ec794;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .map {
+      position: relative;
+      height: 100%;
+      min-height: 620px;
+      border: 3px solid rgba(32, 43, 58, .47);
+      border-radius: 13px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 19% 72%, rgba(255,255,255,.44) 0 7%, transparent 7.4%),
+        radial-gradient(ellipse at 78% 56%, rgba(255,255,255,.38) 0 8%, transparent 8.4%),
+        linear-gradient(30deg, transparent 0 43%, #d2d8d0 43% 46%, #859da2 46% 54%, #d2d8d0 54% 57%, transparent 57%),
+        linear-gradient(-32deg, transparent 0 38%, #d2d8d0 38% 42%, #849da1 42% 50%, #d2d8d0 50% 54%, transparent 54%),
+        linear-gradient(145deg, #d8ebc7, #9fd2a7);
+    }
+
+    .map.level-suburb {
+      background:
+        radial-gradient(ellipse at 18% 72%, rgba(255,255,255,.45) 0 7%, transparent 7.4%),
+        radial-gradient(ellipse at 78% 56%, rgba(255,255,255,.4) 0 8%, transparent 8.4%),
+        linear-gradient(30deg, transparent 0 43%, #d2d8d0 43% 46%, #859da2 46% 54%, #d2d8d0 54% 57%, transparent 57%),
+        linear-gradient(-32deg, transparent 0 38%, #d2d8d0 38% 42%, #849da1 42% 50%, #d2d8d0 50% 54%, transparent 54%),
+        linear-gradient(145deg, #d8ebc7, #9fd2a7);
+    }
+
+    .map.level-night {
+      background:
+        radial-gradient(circle at 74% 15%, rgba(255, 235, 151, .9) 0 3%, transparent 3.3%),
+        radial-gradient(circle at 16% 20%, rgba(255,255,255,.85) 0 1.2%, transparent 1.5%),
+        radial-gradient(circle at 86% 34%, rgba(255,255,255,.8) 0 1%, transparent 1.3%),
+        linear-gradient(30deg, transparent 0 43%, #526476 43% 46%, #283b50 46% 54%, #526476 54% 57%, transparent 57%),
+        linear-gradient(-32deg, transparent 0 38%, #526476 38% 42%, #283b50 42% 50%, #526476 50% 54%, transparent 54%),
+        linear-gradient(145deg, #1b3455, #554777);
+    }
+
+    .map.level-coast {
+      background:
+        radial-gradient(ellipse at 83% 23%, #66cddd 0 14%, transparent 14.4%),
+        linear-gradient(30deg, transparent 0 43%, #ead9b0 43% 46%, #c6a879 46% 54%, #ead9b0 54% 57%, transparent 57%),
+        linear-gradient(-32deg, transparent 0 38%, #ead9b0 38% 42%, #c6a879 42% 50%, #ead9b0 50% 54%, transparent 54%),
+        linear-gradient(145deg, #f7dda9, #79cfca);
+    }
+
+    .map.level-industrial {
+      background:
+        radial-gradient(ellipse at 19% 78%, rgba(244, 160, 74, .45) 0 8%, transparent 8.4%),
+        linear-gradient(30deg, transparent 0 43%, #c4bdb5 43% 46%, #62666f 46% 54%, #c4bdb5 54% 57%, transparent 57%),
+        linear-gradient(-32deg, transparent 0 38%, #c4bdb5 38% 42%, #62666f 42% 50%, #c4bdb5 50% 54%, transparent 54%),
+        linear-gradient(145deg, #b9c4c0, #d8895f);
+    }
+
+    .map.level-festival {
+      background:
+        radial-gradient(circle at 77% 14%, rgba(255, 220, 93, .88) 0 2%, transparent 2.4%),
+        radial-gradient(circle at 16% 22%, rgba(255, 117, 170, .8) 0 1.4%, transparent 1.8%),
+        linear-gradient(30deg, transparent 0 43%, #b7a3c8 43% 46%, #574b71 46% 54%, #b7a3c8 54% 57%, transparent 57%),
+        linear-gradient(-32deg, transparent 0 38%, #b7a3c8 38% 42%, #574b71 42% 50%, #b7a3c8 50% 54%, transparent 54%),
+        linear-gradient(145deg, #536f9e, #bb6c91);
+    }
+
+    .map::before {
+      content: attr(data-title);
+      position: absolute;
+      z-index: 1;
+      left: 14px;
+      top: 13px;
+      padding: 7px 9px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .82);
+      font-size: .63rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+
+    .map::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      right: 13%;
+      bottom: 9%;
+      width: 105px;
+      height: 50px;
+      border: 3px solid rgba(32, 43, 58, .22);
+      border-radius: 50%;
+      background: rgba(113, 185, 126, .38);
+      box-shadow: inset 0 0 0 8px rgba(255,255,255,.18);
+      transform: rotate(-8deg);
+    }
+
+    .map.level-night::after {
+      background: rgba(99, 215, 191, .18);
+      border-color: rgba(139, 255, 236, .35);
+      box-shadow: inset 0 0 0 8px rgba(139,255,236,.12);
+    }
+
+    .map.level-coast::after {
+      background: rgba(255, 255, 255, .38);
+      border-color: rgba(56, 128, 143, .4);
+    }
+
+    .map.level-industrial::after {
+      background: rgba(242, 140, 82, .35);
+      border-color: rgba(101, 72, 58, .35);
+    }
+
+    .map.level-festival::after {
+      background: rgba(255, 111, 187, .28);
+      border-color: rgba(255, 220, 93, .45);
+    }
+
+    .map-help {
+      position: absolute;
+      z-index: 2;
+      right: 13px;
+      top: 13px;
+      padding: 7px 9px;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      background: rgba(255, 249, 208, .93);
+      font-size: .68rem;
+      font-weight: 900;
+    }
+
+    .cloud {
+      position: absolute;
+      z-index: 1;
+      color: rgba(255, 255, 255, .78);
+      font-size: 1.75rem;
+      filter: drop-shadow(2px 3px 0 rgba(32, 43, 58, .1));
+      pointer-events: none;
+      animation: drift 7s ease-in-out infinite alternate;
+    }
+
+    .cloud.c1 {
+      left: 25%;
+      top: 7%;
+    }
+
+    .cloud.c2 {
+      right: 25%;
+      top: 34%;
+      font-size: 1.25rem;
+      animation-delay: -3s;
+    }
+
+    .map-sticker {
+      position: absolute;
+      z-index: 3;
+      left: 12%;
+      bottom: 8%;
+      padding: 6px 8px;
+      border: 2px solid var(--ink);
+      border-radius: 7px;
+      background: #fff0a6;
+      color: #7e5b17;
+      font-size: .57rem;
+      font-weight: 900;
+      letter-spacing: .05em;
+      transform: rotate(-5deg);
+      box-shadow: 2px 3px 0 rgba(32, 43, 58, .14);
+      pointer-events: none;
+    }
+
+    .level-night .map-sticker {
+      background: #b7f5e6;
+      color: #315f68;
+    }
+
+    .level-coast .map-sticker {
+      background: #fff0c3;
+      color: #8b6420;
+    }
+
+    .level-industrial .map-sticker {
+      background: #ffc08c;
+      color: #814422;
+    }
+
+    .level-festival .map-sticker {
+      background: #ffc1dc;
+      color: #76385c;
+    }
+
+    .landmark {
+      position: absolute;
+      z-index: 3;
+      display: grid;
+      place-items: center;
+      width: 68px;
+      min-height: 55px;
+      padding: 4px;
+      border: 2px solid rgba(32, 43, 58, .7);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .77);
+      box-shadow: 3px 3px 0 rgba(32, 43, 58, .12);
+      font-size: 1.55rem;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .landmark span {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: .48rem;
+      font-weight: 900;
+      letter-spacing: .03em;
+    }
+
+    .landmark.school {
+      left: 38%;
+      top: 27%;
+      background: #fbe2bd;
+    }
+
+    .landmark.shop {
+      right: 7%;
+      top: 47%;
+      background: #d9eff4;
+    }
+
+    .landmark.park {
+      left: 7%;
+      bottom: 30%;
+      background: #d6efcb;
+    }
+
+    .landmark.cafe {
+      right: 38%;
+      bottom: 8%;
+      background: #eed7f2;
+    }
+
+    .level-night .landmark {
+      border-color: #b5efe8;
+      background: rgba(38, 54, 84, .9);
+      color: #f5fff9;
+      box-shadow: 0 0 12px rgba(114, 244, 225, .35);
+    }
+
+    .level-night .landmark span {
+      color: #b5efe8;
+    }
+
+    .level-night .landmark.school {
+      left: 31%;
+      top: 27%;
+    }
+
+    .level-night .landmark.shop {
+      right: 10%;
+      top: 50%;
+    }
+
+    .level-night .landmark.park {
+      left: 8%;
+      bottom: 27%;
+    }
+
+    .level-night .landmark.cafe {
+      right: 35%;
+      bottom: 10%;
+    }
+
+    .level-coast .landmark {
+      border-color: #477e86;
+      background: rgba(255, 251, 225, .9);
+    }
+
+    .level-coast .landmark.school {
+      left: 35%;
+      top: 25%;
+    }
+
+    .level-coast .landmark.shop {
+      right: 7%;
+      top: 46%;
+    }
+
+    .level-coast .landmark.park {
+      left: 7%;
+      bottom: 26%;
+    }
+
+    .level-coast .landmark.cafe {
+      right: 36%;
+      bottom: 8%;
+    }
+
+    .level-industrial .landmark {
+      border-radius: 5px;
+      background: rgba(247, 220, 188, .92);
+      box-shadow: 3px 3px 0 rgba(98, 63, 44, .2);
+    }
+
+    .level-industrial .landmark.school {
+      left: 29%;
+      top: 29%;
+    }
+
+    .level-industrial .landmark.shop {
+      right: 7%;
+      top: 48%;
+    }
+
+    .level-industrial .landmark.park {
+      left: 8%;
+      bottom: 25%;
+    }
+
+    .level-industrial .landmark.cafe {
+      right: 35%;
+      bottom: 9%;
+    }
+
+    .level-festival .landmark {
+      border-color: #ffd95f;
+      background: rgba(61, 52, 98, .9);
+      color: #fff7ca;
+      box-shadow: 0 0 13px rgba(255, 213, 87, .38);
+    }
+
+    .level-festival .landmark span {
+      color: #ffd95f;
+    }
+
+    .level-festival .landmark.school {
+      left: 37%;
+      top: 27%;
+    }
+
+    .level-festival .landmark.shop {
+      right: 8%;
+      top: 45%;
+    }
+
+    .level-festival .landmark.park {
+      left: 7%;
+      bottom: 27%;
+    }
+
+    .level-festival .landmark.cafe {
+      right: 35%;
+      bottom: 8%;
+    }
+
+    .level-night .cloud {
+      color: rgba(185, 255, 242, .72);
+    }
+
+    .level-coast .cloud {
+      color: rgba(255, 255, 255, .9);
+    }
+
+    .level-industrial .cloud {
+      color: rgba(255, 225, 190, .65);
+    }
+
+    .level-festival .cloud {
+      color: rgba(255, 213, 239, .82);
+    }
+
+    .level-night .station {
+      background: #b7f5e6;
+      box-shadow: 0 0 16px rgba(114, 244, 225, .6);
+    }
+
+    .level-coast .station {
+      background: #ffe3a8;
+    }
+
+    .level-industrial .station {
+      background: #ffb879;
+    }
+
+    .level-festival .station {
+      background: #ffc0dc;
+      box-shadow: 0 0 15px rgba(255, 213, 87, .55);
+    }
+
+    .street-label {
+      position: absolute;
+      z-index: 2;
+      padding: 3px 6px;
+      border-radius: 5px;
+      background: rgba(255,255,255,.58);
+      color: #607174;
+      font-size: .5rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+      transform: rotate(29deg);
+      pointer-events: none;
+    }
+
+    .street-label.s1 {
+      left: 28%;
+      top: 52%;
+    }
+
+    .street-label.s2 {
+      right: 25%;
+      top: 56%;
+      transform: rotate(-32deg);
+    }
+
+    .level-night .street-label,
+    .level-festival .street-label {
+      background: rgba(33, 42, 73, .72);
+      color: #d0fff4;
+    }
+
+    .level-industrial .street-label {
+      background: rgba(255, 226, 191, .72);
+      color: #7e5542;
+    }
+
+    .road-line {
+      position: absolute;
+      z-index: 1;
+      border-top: 3px dashed rgba(255, 255, 255, .75);
+      pointer-events: none;
+    }
+
+    .road-line.a {
+      width: 48%;
+      left: 5%;
+      top: 47%;
+      transform: rotate(31deg);
+    }
+
+    .road-line.b {
+      width: 44%;
+      right: 1%;
+      top: 43%;
+      transform: rotate(-33deg);
+    }
+
+    .road-line.c {
+      width: 35%;
+      left: 33%;
+      bottom: 16%;
+      transform: rotate(-4deg);
+    }
+
+    .decor {
+      position: absolute;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      font-size: 1.25rem;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .decor.d1 {
+      left: 7%;
+      top: 25%;
+    }
+
+    .decor.d2 {
+      right: 8%;
+      top: 26%;
+    }
+
+    .decor.d3 {
+      left: 12%;
+      bottom: 13%;
+    }
+
+    .decor.d4 {
+      right: 16%;
+      bottom: 14%;
+    }
+
+    .decor.d5 {
+      left: 48%;
+      top: 11%;
+    }
+
+    .station,
+    .target-house,
+    .player {
+      position: absolute;
+      transform: translate(-50%, -50%);
+    }
+
+    .station {
+      z-index: 6;
+      display: grid;
+      place-items: center;
+      width: 70px;
+      height: 62px;
+      border: 3px solid var(--ink);
+      border-radius: 15px;
+      background: #ffd39e;
+      box-shadow: 4px 5px 0 rgba(32, 43, 58, .2);
+      text-align: center;
+      animation: float 1.7s ease-in-out infinite;
+    }
+
+    .station::after {
+      content: "AMBIL";
+      position: absolute;
+      bottom: -21px;
+      padding: 2px 6px;
+      border: 2px solid var(--ink);
+      border-radius: 5px;
+      background: var(--paper);
+      font-size: .55rem;
+      font-weight: 900;
+    }
+
+    .station-icon {
+      font-size: 1.9rem;
+      line-height: 1;
+    }
+
+    .station-label {
+      font-size: .57rem;
+      font-weight: 900;
+    }
+
+    .target-house {
+      z-index: 5;
+      display: grid;
+      place-items: center;
+      width: 94px;
+      min-height: 82px;
+      padding: 5px;
+      border: 3px solid var(--ink);
+      border-radius: 13px;
+      background: rgba(255, 255, 255, .94);
+      box-shadow: 4px 5px 0 rgba(32, 43, 58, .2);
+      text-align: center;
+      transition: transform .15s, background .15s, box-shadow .15s;
+    }
+
+    .target-house.near {
+      transform: translate(-50%, -50%) scale(1.09);
+      background: #fff1a6;
+      box-shadow: 5px 7px 0 rgba(32, 43, 58, .28);
+    }
+
+    .target-house.reached {
+      background: #bdebbb;
+      border-color: var(--green);
+    }
+
+    .house-art {
+      font-size: 2.3rem;
+      line-height: 1;
+    }
+
+    .house-caption {
+      font-size: .57rem;
+      font-weight: 900;
+    }
+
+    .house-number {
+      font-size: .9rem;
+      font-weight: 900;
+    }
+
+    .player {
+      z-index: 8;
+      display: grid;
+      place-items: center;
+      width: 56px;
+      height: 44px;
+      border: 3px solid var(--ink);
+      border-radius: 13px 17px 8px 8px;
+      background: #ffd05a;
+      box-shadow: 0 5px 0 rgba(32, 43, 58, .22);
+      font-size: 1.65rem;
+      transition: transform .05s linear;
+    }
+
+    .player::after {
+      content: "";
+      position: absolute;
+      right: 4px;
+      bottom: -9px;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: #f8fbff;
+      box-shadow: -35px 0 0 -1px #f8fbff, -35px 0 0 1px var(--ink);
+    }
+
+    .player.carrying {
+      background: #ffb44e;
+    }
+
+    .map-message {
+      position: absolute;
+      z-index: 12;
+      left: 50%;
+      bottom: 14px;
+      width: min(450px, 82%);
+      padding: 10px 14px;
+      border: 3px solid var(--ink);
+      border-radius: 11px;
+      background: rgba(255, 255, 255, .94);
+      box-shadow: 3px 4px 0 rgba(32, 43, 58, .15);
+      font-size: .8rem;
+      font-weight: 900;
+      text-align: center;
+      transform: translateX(-50%);
+    }
+
+    .map-message.good {
+      background: #dff7d7;
+      color: #327149;
+    }
+
+    .map-message.warn {
+      background: #ffe0d7;
+      color: #964449;
+    }
+
+    .right-card {
+      min-height: 640px;
+    }
+
+    .right-body {
+      padding: 14px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 900;
+    }
+
+    .progress-track {
+      height: 13px;
+      margin-bottom: 17px;
+      border: 2px solid var(--ink);
+      border-radius: 20px;
+      background: #eaf0ed;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #73c9a0, #ffd45e);
+      transition: width .3s;
+    }
+
+    .mini-rule {
+      padding: 11px;
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      background: var(--yellow);
+      text-align: center;
+    }
+
+    .mini-rule small {
+      display: block;
+      margin-bottom: 4px;
+      font-size: .65rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .rule-formula {
+      font-size: 1.35rem;
+      font-weight: 900;
+    }
+
+    .controls-title {
+      margin: 20px 0 8px;
+      font-size: .75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .key-list {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    .key-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    kbd {
+      display: inline-grid;
+      place-items: center;
+      min-width: 27px;
+      height: 27px;
+      padding: 0 6px;
+      border: 2px solid var(--ink);
+      border-radius: 6px;
+      background: var(--paper);
+      box-shadow: 0 2px 0 rgba(32, 43, 58, .2);
+      color: var(--ink);
+      font-size: .75rem;
+    }
+
+    .touch-controls {
+      display: grid;
+      grid-template-columns: repeat(3, 41px);
+      grid-template-rows: repeat(2, 39px);
+      justify-content: center;
+      gap: 5px;
+      margin-top: 14px;
+    }
+
+    .touch-controls button {
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      background: #e4f5f5;
+      box-shadow: 2px 2px 0 rgba(32, 43, 58, .13);
+      font-weight: 900;
+      touch-action: none;
+    }
+
+    .touch-controls button:nth-child(1) {
+      grid-column: 2;
+    }
+
+    .touch-controls button:nth-child(2) {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .touch-controls button:nth-child(3) {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .touch-controls button:nth-child(4) {
+      grid-column: 3;
+      grid-row: 2;
+    }
+
+    .bottom-bar {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .action {
+      padding: 9px 14px;
+      border: 3px solid var(--ink);
+      border-radius: 10px;
+      background: var(--paper);
+      box-shadow: 3px 3px 0 rgba(32, 43, 58, .14);
+      font-size: .8rem;
+      font-weight: 900;
+    }
+
+    .action.primary {
+      background: var(--sky);
+    }
+
+    .action.yellow {
+      background: var(--yellow);
+    }
+
+    .action:hover {
+      transform: translateY(-2px);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      z-index: 30;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(32, 43, 58, .58);
+    }
+
+    .modal {
+      width: min(500px, 100%);
+      padding: 24px;
+      border: 3px solid var(--ink);
+      border-radius: 20px;
+      background: var(--paper);
+      box-shadow: 8px 8px 0 rgba(32, 43, 58, .26);
+      text-align: center;
+    }
+
+    .modal h2 {
+      margin-bottom: 6px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.5;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+      margin: 17px 0 10px;
+    }
+
+    .answer {
+      padding: 12px;
+      border: 3px solid var(--ink);
+      border-radius: 11px;
+      background: #fff4bd;
+      box-shadow: 3px 3px 0 rgba(32, 43, 58, .14);
+      font-size: 1.05rem;
+      font-weight: 900;
+    }
+
+    .answer:hover {
+      background: #ffe178;
+      transform: translateY(-2px);
+    }
+
+    .answer.correct {
+      background: #b9e9b4;
+      border-color: var(--green);
+    }
+
+    .answer.wrong {
+      background: #ffc8bf;
+      border-color: var(--red);
+      animation: shake .35s;
+    }
+
+    .modal-note {
+      min-height: 25px;
+      margin: 0;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 900;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translate(-50%, -50%) translateY(0);
+      }
+
+      50% {
+        transform: translate(-50%, -50%) translateY(-7px);
+      }
+    }
+
+    @keyframes drift {
+      from {
+        transform: translateX(-4px);
+      }
+
+      to {
+        transform: translateX(9px);
+      }
+    }
+
+    @keyframes shake {
+      0%, 100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-7px);
+      }
+
+      75% {
+        transform: translateX(7px);
+      }
+    }
+
+    @media (max-width: 1120px) {
+      .game-grid {
+        grid-template-columns: 235px minmax(470px, 1fr) 210px;
+      }
+
+      .target-house {
+        width: 82px;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .game-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .map-card {
+        grid-column: 1 / -1;
+        grid-row: 1;
+      }
+
+      .mission-card {
+        grid-column: 1;
+        grid-row: 2;
+        min-height: auto;
+      }
+
+      .right-card {
+        grid-column: 2;
+        grid-row: 2;
+        min-height: auto;
+      }
+
+      .map {
+        min-height: 580px;
+      }
+    }
+
+    @media (max-width: 570px) {
+      body {
+        overflow-x: hidden;
+      }
+
+      .app {
+        padding: 7px;
+      }
+
+      .topbar {
+        gap: 7px;
+        margin-bottom: 8px;
+      }
+
+      .brand-mark {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        font-size: 23px;
+      }
+
+      .eyebrow {
+        font-size: .56rem;
+      }
+
+      h1 {
+        font-size: 1.12rem;
+      }
+
+      .game-grid {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .map-card {
+        order: 1;
+        min-height: 0;
+        padding: 5px;
+        border-radius: 14px;
+      }
+
+      .mission-card {
+        order: 2;
+      }
+
+      .right-card {
+        order: 3;
+      }
+
+      .map {
+        height: min(67vh, 570px);
+        min-height: 415px;
+        border-radius: 10px;
+      }
+
+      .map-help {
+        display: none;
+      }
+
+      .landmark {
+        transform: scale(.82);
+        transform-origin: center;
+      }
+
+      .landmark.school {
+        left: 34%;
+        top: 26%;
+      }
+
+      .landmark.shop {
+        right: 3%;
+        top: 46%;
+      }
+
+      .landmark.park {
+        left: 2%;
+        bottom: 29%;
+      }
+
+      .landmark.cafe {
+        right: 31%;
+        bottom: 7%;
+      }
+
+      .map-sticker {
+        left: 10%;
+        bottom: 9%;
+        transform: rotate(-5deg) scale(.9);
+      }
+
+      .street-label {
+        display: none;
+      }
+
+      .target-house {
+        width: 72px;
+        min-height: 70px;
+      }
+
+      .house-art {
+        font-size: 1.75rem;
+      }
+
+      .house-caption {
+        font-size: .48rem;
+      }
+
+      .house-number {
+        font-size: .75rem;
+      }
+
+      .station {
+        width: 61px;
+        height: 55px;
+      }
+
+      .station-icon {
+        font-size: 1.5rem;
+      }
+
+      .top-stats {
+        width: 100%;
+      }
+
+      .badge {
+        flex: 1;
+        min-height: 35px;
+        padding: 7px 5px;
+        font-size: .7rem;
+        text-align: center;
+      }
+
+      .bottom-bar {
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .action {
+        flex: 1 1 45%;
+        padding: 10px 7px;
+        font-size: .73rem;
+      }
+
+      .mission-card,
+      .right-card {
+        border-radius: 14px;
+      }
+
+      .mission-body,
+      .right-body {
+        padding: 10px;
+      }
+
+      .route-box {
+        margin-top: 9px;
+        padding: 8px;
+      }
+
+      .tips {
+        margin-top: 9px;
+        font-size: .7rem;
+      }
+
+      .right-card .controls-title,
+      .right-card .key-list {
+        display: none;
+      }
+
+      .right-card .touch-controls {
+        position: fixed;
+        z-index: 25;
+        right: 12px;
+        bottom: 12px;
+        display: grid;
+        grid-template-columns: repeat(3, 54px);
+        grid-template-rows: repeat(2, 50px);
+        gap: 5px;
+        padding: 7px;
+        border: 3px solid var(--ink);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, .9);
+        box-shadow: 4px 5px 0 rgba(32, 43, 58, .24);
+      }
+
+      .right-card .touch-controls button {
+        min-width: 50px;
+        min-height: 46px;
+        border-width: 3px;
+        border-radius: 10px;
+        background: #d8f2f3;
+        font-size: 1.15rem;
+      }
+
+      .map-message {
+        bottom: 9px;
+        width: 76%;
+        padding: 8px 9px;
+        font-size: .7rem;
+      }
+
+      .answer {
+        min-height: 53px;
+        padding: 11px 6px;
+        font-size: .95rem;
+      }
+
+      .modal {
+        padding: 19px 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">🚚</div>
+
+        <div>
+          <p class="eyebrow">Game Edukasi Matematika</p>
+          <h1>COURIER QUEST: MISI FUNGSI</h1>
+        </div>
+      </div>
+
+      <div class="top-stats">
+        <div class="badge">
+          LEVEL <strong id="levelText">1</strong>
+        </div>
+
+        <div class="badge">
+          SKOR <strong id="scoreText">0</strong>
+        </div>
+
+        <div class="badge hearts" id="livesText">
+          ❤️❤️❤️
+        </div>
+      </div>
+    </header>
+
+    <section class="game-grid">
+      <aside class="card mission-card">
+        <h2 class="card-heading">
+          📋 PAPAN MISI
+          <small>Ikuti petunjuk kurir</small>
+        </h2>
+
+        <div class="mission-body">
+          <div class="mission-intro">
+            Gerakkan kurir dengan tombol panah atau WASD. Ambil paket, hitung fungsi, lalu datangi rumah yang sesuai.
+          </div>
+
+          <div class="objective">
+            <div class="objective-label">Paket saat ini</div>
+            <div class="objective-value" id="packageValue">x = 1</div>
+
+            <div class="objective-status" id="objectiveStatus">
+              Pergi ke stasiun paket untuk mengambil paket.
+            </div>
+          </div>
+
+          <div class="route-box">
+            <div class="route-step active" id="routePickup">
+              <div class="route-icon">📦</div>
+              <span>Ambil paket di stasiun oranye</span>
+            </div>
+
+            <div class="route-step" id="routeDeliver">
+              <div class="route-icon">🏠</div>
+              <span>Antarkan ke rumah yang benar</span>
+            </div>
+
+            <div class="route-step" id="routeSolve">
+              <div class="route-icon">🧠</div>
+              <span>Jawab teka-teki fungsi</span>
+            </div>
+          </div>
+
+          <div class="tips">
+            💡 <strong>Petunjuk:</strong>
+            nomor rumah adalah hasil dari f(x). Substitusikan nilai x dari paket ke aturan fungsi yang sedang aktif.
+          </div>
+        </div>
+      </aside>
+
+      <section class="map-card">
+        <div class="map" id="map">
+          <div class="map-help" id="mapHelp">
+            📱 Gunakan tombol arah di layar
+          </div>
+
+          <div class="cloud c1">☁️</div>
+          <div class="cloud c2">☁️</div>
+
+          <div class="map-sticker" id="mapSticker">
+            DELIVERY DAY ✦
+          </div>
+
+          <div class="landmark school">
+            <div class="landmark-icon">🏫</div>
+            <span>SEKOLAH</span>
+          </div>
+
+          <div class="landmark shop">
+            <div class="landmark-icon">🏪</div>
+            <span>MINIMARKET</span>
+          </div>
+
+          <div class="landmark park">
+            <div class="landmark-icon">🌳🌳</div>
+            <span>TAMAN KOTA</span>
+          </div>
+
+          <div class="landmark cafe">
+            <div class="landmark-icon">☕</div>
+            <span>CAFÉ</span>
+          </div>
+
+          <div class="street-label s1">Jl. Relasi</div>
+          <div class="street-label s2">Jl. Fungsi</div>
+
+          <div class="road-line a"></div>
+          <div class="road-line b"></div>
+          <div class="road-line c"></div>
+
+          <div class="decor d1">🌳</div>
+          <div class="decor d2">🌲</div>
+          <div class="decor d3">🌳</div>
+          <div class="decor d4">🌲</div>
+          <div class="decor d5">⛲</div>
+
+          <div class="station" id="station" style="left: 18%; top: 25%;">
+            <div class="station-icon">📦</div>
+            <div class="station-label">PAKET</div>
+          </div>
+
+          <div class="target-house" data-house-index="0" style="left: 78%; top: 22%;">
+            <div class="house-art">🏠</div>
+            <div class="house-caption">RUMAH</div>
+            <div class="house-number">12</div>
+          </div>
+
+          <div class="target-house" data-house-index="1" style="left: 82%; top: 70%;">
+            <div class="house-art">🏡</div>
+            <div class="house-caption">RUMAH</div>
+            <div class="house-number">27</div>
+          </div>
+
+          <div class="target-house" data-house-index="2" style="left: 21%; top: 78%;">
+            <div class="house-art">🏘️</div>
+            <div class="house-caption">RUMAH</div>
+            <div class="house-number">42</div>
+          </div>
+
+          <div class="target-house" data-house-index="3" style="left: 54%; top: 17%;">
+            <div class="house-art">🏠</div>
+            <div class="house-caption">RUMAH</div>
+            <div class="house-number">52</div>
+          </div>
+
+          <div class="player" id="player" style="left: 49%; top: 52%;">
+            🚚
+          </div>
+
+          <div class="map-message" id="mapMessage">
+            Cari stasiun oranye untuk mengambil paket.
+          </div>
+        </div>
+      </section>
+
+      <aside class="card right-card">
+        <h2 class="card-heading">
+          🗺️ PETA MISI
+          <small>Tujuan pengiriman</small>
+        </h2>
+
+        <div class="right-body">
+          <div class="progress-label">
+            <span>PROGRES LEVEL</span>
+            <span id="progressText">0 / 4</span>
+          </div>
+
+          <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+
+          <div class="mini-rule">
+            <small>Aturan fungsi</small>
+            <div class="rule-formula" id="formulaText">
+              f(x) = 3x + 2
+            </div>
+          </div>
+
+          <div class="controls-title">
+            Kontrol permainan
+          </div>
+
+          <div class="key-list">
+            <div class="key-row">
+              <kbd>↑</kbd>
+              <span>Bergerak ke atas</span>
+            </div>
+
+            <div class="key-row">
+              <kbd>←</kbd>
+              <kbd>↓</kbd>
+              <kbd>→</kbd>
+              <span>Bergerak ke arah lain</span>
+            </div>
+
+            <div class="key-row">
+              <kbd>W</kbd>
+              <kbd>A</kbd>
+              <kbd>S</kbd>
+              <kbd>D</kbd>
+              <span>Kontrol alternatif</span>
+            </div>
+
+            <div class="key-row">
+              📱
+              <span>Atau gunakan tombol arah di layar</span>
+            </div>
+          </div>
+
+          <div class="touch-controls" aria-label="Kontrol sentuh">
+            <button data-direction="up">▲</button>
+            <button data-direction="left">◀</button>
+            <button data-direction="down">▼</button>
+            <button data-direction="right">▶</button>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <div class="bottom-bar">
+      <button class="action yellow" id="hintButton">
+        💡 Beri Petunjuk
+      </button>
+
+      <button class="action" id="resetButton">
+        ↻ Ulangi Level
+      </button>
+
+      <button class="action primary" id="howButton">
+        ❔ Cara Bermain
+      </button>
+
+      <button class="action primary" id="nextButton">
+        Level Berikutnya →
+      </button>
+    </div>
+  </main>
+
+  <div class="modal-backdrop hidden" id="puzzleModal">
+    <div class="modal">
+      <h2 id="puzzleTitle">Teka-teki Rumah</h2>
+
+      <p id="puzzleQuestion">
+        Hitung hasil fungsi berikut.
+      </p>
+
+      <div class="answer-grid" id="answerGrid"></div>
+
+      <p class="modal-note" id="modalNote">
+        Pilih satu jawaban untuk menyelesaikan pengiriman.
+      </p>
+
+      <button class="action" id="closePuzzleButton">
+        Kembali ke peta
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop hidden" id="infoModal">
+    <div class="modal">
+      <h2 id="infoTitle">Cara Bermain</h2>
+
+      <p id="infoText">
+        Gunakan tombol panah atau WASD untuk menggerakkan kurir. Datangi stasiun paket, ambil paket, lalu berjalan menuju rumah yang sesuai dengan hasil fungsi. Saat tiba, jawab teka-tekinya.
+      </p>
+
+      <button class="action primary" id="closeInfoButton">
+        Siap Mengantar!
+      </button>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+
+    const levels = [
+      {
+        formulaText: "f(x) = 3x + 2",
+        calculate: (x) => 3 * x + 2,
+        missions: [1, 2, 3, 4],
+        theme: "level-suburb",
+        mapTitle: "KOTA CERIA • ZONA PENGIRIMAN",
+        mapHint: "☀️ Siang cerah • gunakan tombol arah",
+        sticker: "DELIVERY DAY ✦",
+        skyIcon: "☁️",
+        landmarks: [
+          ["🏫", "SEKOLAH"],
+          ["🏪", "MINIMARKET"],
+          ["🌳🌳", "TAMAN KOTA"],
+          ["☕", "CAFÉ"]
+        ]
+      },
+
+      {
+        formulaText: "f(x) = 2x² + 1",
+        calculate: (x) => 2 * x * x + 1,
+        missions: [1, 2, 3, 4],
+        theme: "level-night",
+        mapTitle: "KOTA NEON • RUTE MALAM",
+        mapHint: "🌙 Malam neon • cari alamat bercahaya",
+        sticker: "NIGHT RUN ✦",
+        skyIcon: "✦",
+        landmarks: [
+          ["🌃", "MENARA"],
+          ["🌙", "NIGHT SHOP"],
+          ["🌌", "OBSERVATORIUM"],
+          ["🎵", "CLUB"]
+        ]
+      },
+
+      {
+        formulaText: "f(x) = x² + 3x + 2",
+        calculate: (x) => x * x + 3 * x + 2,
+        missions: [1, 2, 3, 4, 5],
+        theme: "level-coast",
+        mapTitle: "PANTAI CERIA • RUTE PESISIR",
+        mapHint: "🌊 Angin laut • kirim paket ke pesisir",
+        sticker: "COASTAL ROUTE ✦",
+        skyIcon: "☀️",
+        landmarks: [
+          ["⛱️", "PANTAI"],
+          ["🛟", "PELABUHAN"],
+          ["🐚", "TAMAN LAUT"],
+          ["🍹", "KAFE PANTAI"]
+        ]
+      },
+
+      {
+        formulaText: "f(x) = 2(x + 1)² − 3",
+        calculate: (x) => 2 * (x + 1) * (x + 1) - 3,
+        missions: [1, 2, 3, 4, 5],
+        theme: "level-industrial",
+        mapTitle: "KAWASAN INDUSTRI • SHIFT SORE",
+        mapHint: "🏭 Kawasan padat • baca fungsi dengan teliti",
+        sticker: "FACTORY SHIFT ✦",
+        skyIcon: "⚡",
+        landmarks: [
+          ["🏭", "PABRIK"],
+          ["🚉", "STASIUN"],
+          ["🛠️", "BENGKEL"],
+          ["⚙️", "GUDANG"]
+        ]
+      },
+
+      {
+        formulaText: "f(x) = 3x² − 2x + 4",
+        calculate: (x) => 3 * x * x - 2 * x + 4,
+        missions: [1, 2, 3, 4, 5, 6],
+        theme: "level-festival",
+        mapTitle: "KOTA FESTIVAL • FINAL DELIVERY",
+        mapHint: "🎪 Festival malam • tantangan terakhir",
+        sticker: "FINAL DELIVERY ✦",
+        skyIcon: "✦",
+        landmarks: [
+          ["🎪", "FESTIVAL"],
+          ["🎡", "PASAR MALAM"],
+          ["🌲", "HUTAN"],
+          ["🔥", "CAMP"]
+        ]
+      }
+    ];
+
+    const housePositions = [
+      { left: 78, top: 22 },
+      { left: 82, top: 70 },
+      { left: 21, top: 78 },
+      { left: 54, top: 17 }
+    ];
+
+    const state = {
+      level: 0,
+      missionIndex: 0,
+      score: 0,
+      lives: 3,
+      hasPackage: false,
+      moving: {},
+      player: {
+        x: 49,
+        y: 52
+      },
+      puzzleOpen: false,
+      gameFinished: false,
+      lastTime: 0
+    };
+
+    const el = {
+      map: document.getElementById("map"),
+      mapHelp: document.getElementById("mapHelp"),
+      mapSticker: document.getElementById("mapSticker"),
+      clouds: [...document.querySelectorAll(".cloud")],
+      landmarks: [...document.querySelectorAll(".landmark")],
+      player: document.getElementById("player"),
+      station: document.getElementById("station"),
+      houses: [...document.querySelectorAll(".target-house")],
+      levelText: document.getElementById("levelText"),
+      scoreText: document.getElementById("scoreText"),
+      livesText: document.getElementById("livesText"),
+      packageValue: document.getElementById("packageValue"),
+      objectiveStatus: document.getElementById("objectiveStatus"),
+      formulaText: document.getElementById("formulaText"),
+      progressText: document.getElementById("progressText"),
+      progressBar: document.getElementById("progressBar"),
+      mapMessage: document.getElementById("mapMessage"),
+      routePickup: document.getElementById("routePickup"),
+      routeDeliver: document.getElementById("routeDeliver"),
+      routeSolve: document.getElementById("routeSolve"),
+      hintButton: document.getElementById("hintButton"),
+      resetButton: document.getElementById("resetButton"),
+      nextButton: document.getElementById("nextButton"),
+      howButton: document.getElementById("howButton"),
+      puzzleModal: document.getElementById("puzzleModal"),
+      puzzleTitle: document.getElementById("puzzleTitle"),
+      puzzleQuestion: document.getElementById("puzzleQuestion"),
+      answerGrid: document.getElementById("answerGrid"),
+      modalNote: document.getElementById("modalNote"),
+      closePuzzleButton: document.getElementById("closePuzzleButton"),
+      infoModal: document.getElementById("infoModal"),
+      closeInfoButton: document.getElementById("closeInfoButton")
+    };
+
+    function currentLevel() {
+      return levels[state.level];
+    }
+
+    function currentValue() {
+      return currentLevel().missions[state.missionIndex];
+    }
+
+    function currentAnswer() {
+      return currentLevel().calculate(currentValue());
+    }
+
+    function setMessage(text, type = "") {
+      el.mapMessage.textContent = text;
+      el.mapMessage.className = `map-message ${type}`;
+    }
+
+    function renderMapTheme(level) {
+      el.map.className = `map ${level.theme}`;
+      el.map.dataset.title = level.mapTitle;
+      el.mapHelp.textContent = level.mapHint;
+      el.mapSticker.textContent = level.sticker;
+
+      el.clouds.forEach((cloud) => {
+        cloud.textContent = level.skyIcon;
+      });
+
+      el.landmarks.forEach((landmark, index) => {
+        const [icon, label] = level.landmarks[index];
+
+        landmark.querySelector(".landmark-icon").textContent = icon;
+        landmark.querySelector("span").textContent = label;
+      });
+    }
+
+    function render() {
+      const level = currentLevel();
+
+      renderMapTheme(level);
+
+      el.levelText.textContent = state.level + 1;
+      el.scoreText.textContent = state.score;
+
+      el.livesText.innerHTML = [0, 1, 2]
+        .map((index) => {
+          const off = index >= state.lives ? "heart-off" : "";
+          return `<span class="${off}">❤️</span>`;
+        })
+        .join("");
+
+      el.packageValue.textContent = `x = ${currentValue()}`;
+      el.formulaText.textContent = level.formulaText;
+      el.progressText.textContent = `${state.missionIndex} / ${level.missions.length}`;
+      el.progressBar.style.width =
+        `${(state.missionIndex / level.missions.length) * 100}%`;
+
+      el.player.style.left = `${state.player.x}%`;
+      el.player.style.top = `${state.player.y}%`;
+      el.player.classList.toggle("carrying", state.hasPackage);
+      el.station.classList.toggle("hidden", state.hasPackage);
+
+      el.houses.forEach((house) => {
+        house.classList.remove("near", "reached");
+      });
+
+      updateRoute();
+    }
+
+    function updateRoute() {
+      el.routePickup.classList.toggle("active", !state.hasPackage);
+      el.routePickup.classList.toggle("done", state.hasPackage);
+      el.routeDeliver.classList.toggle("active", state.hasPackage);
+      el.routeDeliver.classList.toggle("done", false);
+      el.routeSolve.classList.toggle("active", false);
+
+      if (state.hasPackage) {
+        el.objectiveStatus.textContent =
+          `Antarkan paket x = ${currentValue()} ke rumah bernomor ${currentAnswer()}.`;
+      } else {
+        el.objectiveStatus.textContent =
+          "Pergi ke stasiun paket untuk mengambil paket.";
+      }
+    }
+
+    function resetLevel() {
+      state.missionIndex = 0;
+      state.lives = 3;
+      state.hasPackage = false;
+      state.puzzleOpen = false;
+      state.gameFinished = false;
+      state.player = {
+        x: 49,
+        y: 52
+      };
+
+      closePuzzle();
+      setHouseNumbers();
+      setMessage("Cari stasiun oranye untuk mengambil paket.");
+      render();
+    }
+
+    function setHouseNumbers() {
+      const level = currentLevel();
+      const correctAnswer = level.calculate(level.missions[state.missionIndex]);
+
+      const answers = level.missions
+        .map(level.calculate)
+        .filter((answer) => answer !== correctAnswer);
+
+      let distractor =
+        correctAnswer + (state.missionIndex % 2 === 0 ? 3 : -3);
+
+      while (answers.includes(distractor) || distractor === correctAnswer) {
+        distractor += 2;
+      }
+
+      const houseValues = [
+        correctAnswer,
+        ...answers.slice(0, 2),
+        distractor
+      ].filter((value, index, array) => {
+        return array.indexOf(value) === index;
+      });
+
+      el.houses.forEach((house, index) => {
+        const value = houseValues[index];
+
+        house.querySelector(".house-number").textContent = value;
+        house.dataset.value = value;
+        house.dataset.correct = String(value === correctAnswer);
+        house.style.left = `${housePositions[index].left}%`;
+        house.style.top = `${housePositions[index].top}%`;
+      });
+    }
+
+    function startNextMission() {
+      if (state.missionIndex >= currentLevel().missions.length) {
+        return;
+      }
+
+      state.hasPackage = false;
+      state.puzzleOpen = false;
+
+      setHouseNumbers();
+      setMessage("Paket baru tersedia. Datangi stasiun oranye.");
+      render();
+    }
+
+    function takePackage() {
+      if (state.hasPackage || state.gameFinished) {
+        return;
+      }
+
+      state.hasPackage = true;
+
+      el.routeDeliver.classList.add("active");
+
+      setMessage(
+        `Paket x = ${currentValue()} diambil! Cari Rumah ${currentAnswer()}.`,
+        "good"
+      );
+
+      render();
+    }
+
+    function tryReachHouse(house) {
+      if (!state.hasPackage || state.puzzleOpen || state.gameFinished) {
+        return;
+      }
+
+      if (house.dataset.correct !== "true") {
+        setMessage(
+          `Rumah ${house.dataset.value} bukan tujuan yang tepat. Hitung lagi f(x).`,
+          "warn"
+        );
+        return;
+      }
+
+      openPuzzle(house);
+    }
+
+    function openPuzzle(house) {
+      state.puzzleOpen = true;
+
+      const value = currentValue();
+      const answer = currentAnswer();
+      const level = currentLevel();
+      const choices = createChoices(answer);
+
+      el.puzzleTitle.textContent = `🏠 Rumah ${house.dataset.value}`;
+
+      el.puzzleQuestion.textContent =
+        `Paket bernilai x = ${value}. Berapakah hasil ${level.formulaText}?`;
+
+      el.answerGrid.innerHTML = "";
+      el.modalNote.textContent =
+        "Pilih jawaban yang benar untuk menyelesaikan pengiriman.";
+
+      choices.forEach((choice) => {
+        const button = document.createElement("button");
+
+        button.className = "answer";
+        button.textContent = choice;
+
+        button.addEventListener("click", () => {
+          answerPuzzle(
+            button,
+            Number(choice),
+            answer,
+            house
+          );
+        });
+
+        el.answerGrid.appendChild(button);
+      });
+
+      el.puzzleModal.classList.remove("hidden");
+    }
+
+    function createChoices(answer) {
+      const choices = new Set([answer]);
+
+      [
+        answer - 3,
+        answer + 3,
+        answer + 5,
+        Math.max(1, answer - 5)
+      ].forEach((value) => {
+        choices.add(value);
+      });
+
+      return [...choices]
+        .sort(() => Math.random() - .5)
+        .slice(0, 4);
+    }
+
+    function answerPuzzle(button, selected, answer, house) {
+      const buttons = [
+        ...el.answerGrid.querySelectorAll(".answer")
+      ];
+
+      buttons.forEach((item) => {
+        item.disabled = true;
+      });
+
+      const deliveredValue = currentValue();
+
+      if (selected === answer) {
+        button.classList.add("correct");
+
+        state.score += 50;
+        state.hasPackage = false;
+        state.missionIndex += 1;
+
+        house.classList.add("reached");
+        el.routeSolve.classList.add("done");
+
+        el.modalNote.textContent =
+          `Benar! f(${deliveredValue}) = ${answer}. +50 poin`;
+
+        el.progressBar.style.width =
+          `${(state.missionIndex / currentLevel().missions.length) * 100}%`;
+
+        setMessage(
+          `Pengiriman berhasil! Rumah ${answer} menerima paket.`,
+          "good"
+        );
+
+        setTimeout(() => {
+          closePuzzle();
+
+          if (state.missionIndex >= currentLevel().missions.length) {
+            finishLevel();
+          } else {
+            startNextMission();
+          }
+        }, 850);
+      } else {
+        button.classList.add("wrong");
+        state.lives -= 1;
+
+        el.modalNote.textContent =
+          `Belum tepat. Coba hitung kembali substitusi x = ${currentValue()}.`;
+
+        buttons.forEach((item) => {
+          if (Number(item.textContent) === answer) {
+            item.disabled = false;
+          }
+        });
+
+        updateLives();
+
+        if (state.lives <= 0) {
+          setTimeout(() => {
+            closePuzzle();
+
+            showInfo(
+              "Nyawa Habis 💔",
+              "Kurir belum berhasil menyelesaikan misi. Ulangi level ini dan hitung fungsi dengan lebih teliti.",
+              "Coba Lagi",
+              resetLevel
+            );
+          }, 600);
+        }
+      }
+    }
+
+    function closePuzzle() {
+      state.puzzleOpen = false;
+      el.puzzleModal.classList.add("hidden");
+    }
+
+    function finishLevel() {
+      state.gameFinished = true;
+
+      setTimeout(() => {
+        const last = state.level === levels.length - 1;
+
+        showInfo(
+          last
+            ? "Kota Berhasil Dilayani! 🎉"
+            : "Level Berhasil! 🎉",
+
+          last
+            ? `Semua paket sudah terkirim. Skor akhir kamu ${state.score}.`
+            : `Semua misi di Level ${state.level + 1} selesai. Siap menghadapi fungsi berikutnya?`,
+
+          last ? "Main dari Awal" : "Lanjut Level",
+
+          () => {
+            if (last) {
+              state.level = 0;
+              state.score = 0;
+            } else {
+              state.level += 1;
+            }
+
+            resetLevel();
+          }
+        );
+      }, 300);
+    }
+
+    function updateLives() {
+      el.livesText.innerHTML = [0, 1, 2]
+        .map((index) => {
+          const off = index >= state.lives ? "heart-off" : "";
+          return `<span class="${off}">❤️</span>`;
+        })
+        .join("");
+
+      el.scoreText.textContent = state.score;
+    }
+
+    function showHint() {
+      const value = currentValue();
+      const answer = currentAnswer();
+
+      if (!state.hasPackage) {
+        setMessage(
+          `Petunjuk: ambil paket bernilai x = ${value} di stasiun oranye.`,
+          "warn"
+        );
+        return;
+      }
+
+      setMessage(
+        `Petunjuk: substitusikan x = ${value} ke fungsi. Hasilnya adalah ${answer}.`,
+        "warn"
+      );
+    }
+
+    function showInfo(title, text, buttonText, callback) {
+      document.getElementById("infoTitle").textContent = title;
+      document.getElementById("infoText").textContent = text;
+      el.closeInfoButton.textContent = buttonText;
+      el.infoModal.classList.remove("hidden");
+
+      el.closeInfoButton.onclick = () => {
+        el.infoModal.classList.add("hidden");
+
+        if (callback) {
+          callback();
+        }
+      };
+    }
+
+    function updateMovement(delta) {
+      if (state.puzzleOpen || state.gameFinished) {
+        return;
+      }
+
+      const speed = 0.055 * delta;
+
+      let dx = 0;
+      let dy = 0;
+
+      if (state.moving.up) {
+        dy -= speed;
+      }
+
+      if (state.moving.down) {
+        dy += speed;
+      }
+
+      if (state.moving.left) {
+        dx -= speed;
+      }
+
+      if (state.moving.right) {
+        dx += speed;
+      }
+
+      if (!dx && !dy) {
+        return;
+      }
+
+      state.player.x = Math.max(
+        5,
+        Math.min(95, state.player.x + dx)
+      );
+
+      state.player.y = Math.max(
+        9,
+        Math.min(92, state.player.y + dy)
+      );
+
+      renderPlayerOnly();
+      checkCollisions();
+    }
+
+    function renderPlayerOnly() {
+      el.player.style.left = `${state.player.x}%`;
+      el.player.style.top = `${state.player.y}%`;
+    }
+
+    function distanceTo(element) {
+      const rect = el.map.getBoundingClientRect();
+      const targetRect = element.getBoundingClientRect();
+
+      const tx =
+        ((targetRect.left + targetRect.width / 2 - rect.left) /
+          rect.width) *
+        100;
+
+      const ty =
+        ((targetRect.top + targetRect.height / 2 - rect.top) /
+          rect.height) *
+        100;
+
+      return Math.hypot(
+        state.player.x - tx,
+        state.player.y - ty
+      );
+    }
+
+    function checkCollisions() {
+      const stationDistance = distanceTo(el.station);
+
+      if (!state.hasPackage && stationDistance < 7) {
+        el.station.classList.add("near");
+        takePackage();
+      } else {
+        el.station.classList.remove("near");
+      }
+
+      el.houses.forEach((house) => {
+        const near = distanceTo(house) < 8;
+
+        house.classList.toggle(
+          "near",
+          near && state.hasPackage
+        );
+
+        if (near && state.hasPackage) {
+          tryReachHouse(house);
+        }
+      });
+    }
+
+    function gameLoop(timestamp) {
+      if (!state.lastTime) {
+        state.lastTime = timestamp;
+      }
+
+      const delta = Math.min(
+        timestamp - state.lastTime,
+        35
+      );
+
+      state.lastTime = timestamp;
+
+      updateMovement(delta);
+      requestAnimationFrame(gameLoop);
+    }
+
+    function setMovement(direction, active) {
+      state.moving[direction] = active;
+    }
+
+    document.addEventListener("keydown", (event) => {
+      const key = event.key.toLowerCase();
+
+      const keys = {
+        arrowup: "up",
+        w: "up",
+        arrowdown: "down",
+        s: "down",
+        arrowleft: "left",
+        a: "left",
+        arrowright: "right",
+        d: "right"
+      };
+
+      const direction = keys[key];
+
+      if (direction) {
+        event.preventDefault();
+        setMovement(direction, true);
+      }
+    });
+
+    document.addEventListener("keyup", (event) => {
+      const key = event.key.toLowerCase();
+
+      const keys = {
+        arrowup: "up",
+        w: "up",
+        arrowdown: "down",
+        s: "down",
+        arrowleft: "left",
+        a: "left",
+        arrowright: "right",
+        d: "right"
+      };
+
+      const direction = keys[key];
+
+      if (direction) {
+        setMovement(direction, false);
+      }
+    });
+
+    document.querySelectorAll("[data-direction]").forEach((button) => {
+      const direction = button.dataset.direction;
+
+      const start = (event) => {
+        event.preventDefault();
+        setMovement(direction, true);
+      };
+
+      const stop = (event) => {
+        event.preventDefault();
+        setMovement(direction, false);
+      };
+
+      button.addEventListener("pointerdown", start);
+      button.addEventListener("pointerup", stop);
+      button.addEventListener("pointerleave", stop);
+      button.addEventListener("pointercancel", stop);
+    });
+
+    el.hintButton.addEventListener("click", showHint);
+    el.resetButton.addEventListener("click", resetLevel);
+
+    el.nextButton.addEventListener("click", () => {
+      if (state.level < levels.length - 1) {
+        state.level += 1;
+        resetLevel();
+      } else {
+        showInfo(
+          "Level Terakhir",
+          "Selesaikan semua misi di level ini untuk menamatkan permainan.",
+          "Mengerti"
+        );
+      }
+    });
+
+    el.howButton.addEventListener("click", () => {
+      showInfo(
+        "Cara Bermain 🚚",
+        "Gunakan WASD atau tombol panah untuk menggerakkan kurir. Datangi stasiun oranye, ambil paket, lalu cari rumah dengan nomor hasil fungsi. Setelah tiba, jawab teka-tekinya.",
+        "Siap Mengantar!"
+      );
+    });
+
+    el.closePuzzleButton.addEventListener("click", closePuzzle);
+
+    setHouseNumbers();
+    render();
+    requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
