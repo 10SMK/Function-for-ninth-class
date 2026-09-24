@@ -1,140 +1,503 @@
-Buat sebuah game edukasi matematika berbasis web dengan tampilan, layout, warna, dan mekanik yang sangat mirip dengan gambar referensi terlampir.
+Buatkan satu file lengkap bernama index.html untuk game edukasi matematika berbasis browser dengan judul:
 
-Judul game:
 “COURIER QUEST: MISI FUNGSI”
 
-Konsep:
-Game 2D edukasi matematika tentang fungsi linear. Pemain mengendalikan mobil kurir di sebuah peta kota, mengambil paket, lalu mengantarkannya ke rumah yang benar berdasarkan nilai fungsi matematika.
+Game harus dibuat menggunakan HTML5, CSS3, dan JavaScript murni dalam satu file index.html. Jangan gunakan framework, library eksternal, CDN, gambar eksternal, atau aset berhak cipta. Semua ilustrasi harus dibuat menggunakan CSS, emoji, SVG inline, atau Canvas.
 
-Gunakan gambar referensi sebagai acuan utama untuk:
-- Struktur layout
-- Posisi panel
-- Warna
-- Ukuran elemen
-- Gaya ilustrasi
-- Tipografi
-- Jarak antar komponen
-- Bentuk tombol
-- Tampilan peta
-- Nuansa game edukasi anak yang cerah dan ramah
+Tampilan game harus sangat mirip dengan referensi visual yang saya lampirkan, yaitu game edukasi dengan layout dashboard tiga kolom.
 
-Jangan membuat landing page biasa. Buat game yang langsung dapat dimainkan.
+==================================================
+1. KONSEP GAME
+==================================================
 
-## Teknologi
+Pemain mengendalikan sebuah mobil kurir kecil yang bergerak di dalam peta kota.
 
-Gunakan:
-- React
-- TypeScript
-- Vite
-- Tailwind CSS
-- HTML5 Canvas atau SVG untuk peta interaktif
-- Lucide React untuk ikon
-- Tanpa backend
-- Data level disimpan dalam file JSON atau state lokal
-- Responsive untuk desktop dan tablet
+Misi permainan:
 
-## Struktur tampilan utama
+1. Mengambil paket di stasiun oranye.
+2. Mengantarkan paket ke rumah yang nomor rumahnya sesuai dengan hasil fungsi.
+3. Menjawab teka-teki matematika fungsi.
+4. Menyelesaikan 4 level.
+5. Setiap jawaban benar menambah skor.
+6. Pemain memiliki 3 nyawa berbentuk ikon hati.
 
-Buat halaman game dengan latar belakang krem muda dan layout tiga kolom:
+Gunakan aturan fungsi:
 
-### 1. Panel kiri: “PAPAN MISI”
+f(x) = 3x + 2
 
-Panel berbentuk kartu besar dengan:
-- Border hitam/abu-abu tebal
-- Sudut membulat
-- Efek bayangan lembut
-- Header biru muda
-- Judul “📋 PAPAN MISI”
-- Subtitle kecil: “Ikuti petunjuk kurir”
+Pada awal permainan:
+
+x = 1
+
+Maka tujuan pengiriman pertama adalah rumah dengan nomor:
+
+f(1) = 3(1) + 2 = 5
+
+Sediakan sekurang-kurangnya 4 level dengan data berikut:
+
+Level 1:
+x = 1
+jawaban benar = 5
+pertanyaan = “Berapakah nilai f(1) jika f(x) = 3x + 2?”
+
+Level 2:
+x = 2
+jawaban benar = 8
+pertanyaan = “Berapakah nilai f(2) jika f(x) = 3x + 2?”
+
+Level 3:
+x = 3
+jawaban benar = 11
+pertanyaan = “Berapakah nilai f(3) jika f(x) = 3x + 2?”
+
+Level 4:
+x = 4
+jawaban benar = 14
+pertanyaan = “Berapakah nilai f(4) jika f(x) = 3x + 2?”
+
+==================================================
+2. STRUKTUR LAYOUT
+==================================================
+
+Buat layout utama seperti berikut:
+
+A. Header bagian atas
+
+Header memiliki:
+
+- Ikon kecil kendaraan kurir.
+- Teks kecil “GAME EDUKASI MATEMATIKA”.
+- Judul besar “COURIER QUEST: MISI FUNGSI”.
+- Tombol “LEVEL 1”.
+- Teks “SKOR 0”.
+- Tiga ikon hati sebagai nyawa pemain.
+- Header menggunakan warna pastel dan border gelap.
+- Tampilan harus memiliki sudut membulat.
+- Gunakan font yang ramah anak dan mudah dibaca.
+
+B. Kolom kiri: PAPAN MISI
+
+Buat panel kiri dengan judul:
+
+“PAPAN MISI”
+
+Subjudul kecil:
+
+“Ikuti petunjuk kurir”
 
 Isi panel:
 
-1. Kotak instruksi berwarna kuning muda:
+1. Kotak informasi berwarna kuning muda:
    “Gerakkan kurir dengan tombol panah atau WASD. Ambil paket, hitung fungsi, lalu datangi rumah yang sesuai.”
 
-2. Kartu soal aktif:
-   - Label: “PAKET SAAT INI”
-   - Persamaan besar: `X = 1`
-   - Instruksi: “Pergi ke stasiun paket untuk mengambil paket.”
+2. Kotak status:
+   “PAKET SAAT INI”
+   “x = 1”
+   “Pergi ke stasiun paket untuk mengambil paket.”
 
-3. Daftar misi vertikal:
-   - Ikon paket: “Ambil paket di stasiun oranye”
-   - Ikon rumah: “Antarkan ke rumah yang benar”
-   - Ikon bola matematika: “Jawab teka-teki fungsi”
+3. Alur misi vertikal:
+   - Ikon paket
+   - “Ambil paket di stasiun oranye”
+   - Garis penghubung vertikal
+   - Ikon rumah
+   - “Antarkan ke rumah yang benar”
+   - Garis penghubung vertikal
+   - Ikon bola matematika
+   - “Jawab teka-teki fungsi”
 
-4. Kotak tips biru muda:
+4. Kotak petunjuk biru muda:
    “Petunjuk: nomor rumah adalah hasil dari f(x). Substitusikan nilai x dari paket ke aturan fungsi yang sedang aktif.”
 
-### 2. Area tengah: peta permainan
+C. Bagian tengah: PETA PERMAINAN
 
-Buat area peta berbentuk kartu besar dengan:
-- Border gelap tebal
-- Sudut membulat
-- Bingkai hijau
-- Background hijau pastel
-- Area permainan di dalam bingkai dengan padding
+Bagian tengah adalah area permainan utama.
 
-Peta harus memiliki:
-- Jalan kota berbentuk persimpangan diagonal
-- Jalan berwarna abu-abu kebiruan
-- Garis putus-putus putih di tengah jalan
-- Nama jalan kecil seperti:
-  - “Jl. Kelapa”
-  - “Jl. Mawar”
-  - “Jl. Anggrek”
-- Rumput hijau muda
-- Pohon kecil
-- Semak
-- Danau/kolam kecil
-- Area taman kota
-- Kafe
-- Sekolah
-- Minimarket
-- Stasiun paket oranye
-- Beberapa rumah dengan nomor berbeda
+Buat peta kota dengan gaya ilustrasi pastel:
 
-Objek penting di peta:
-- Mobil kurir kecil berwarna kuning-oranye
-- Mobil memiliki roda hitam, kaca depan biru, lampu merah/biru
-- Mobil bisa digerakkan dengan tombol panah dan WASD
-- Mobil memiliki animasi gerak sederhana
-- Tampilkan lingkaran kecil atau highlight di sekitar objek yang sedang berinteraksi
+- Rumput hijau muda sebagai latar.
+- Jalan raya berwarna abu-abu.
+- Persimpangan jalan.
+- Garis putih putus-putus di jalan.
+- Trotoar atau area abu-abu muda.
+- Pepohonan kecil.
+- Kolam kecil.
+- Taman kota.
+- Kafe.
+- Sekolah.
+- Minimarket.
+- Beberapa rumah.
 
-Lokasi bangunan:
-- Rumah 10
-- Rumah 5
-- Rumah 8
-- Rumah 11
-- Sekolah
-- Minimarket
-- Kafe
-- Taman kota
-- Stasiun paket
+Tempatkan objek berikut pada peta:
 
-Setiap rumah harus memiliki label:
-- Ikon rumah
-- Teks “RUMAH”
-- Nomor rumah besar di bawahnya
+1. Stasiun paket berwarna oranye dengan label:
+   “PAKET”
+   “AMBIL”
 
-Tambahkan label “DELIVERY DAY” pada salah satu bagian peta.
+2. Rumah dengan nomor:
+   “RUMAH 10”
 
-Tambahkan pesan status di bagian bawah peta:
+3. Rumah dengan nomor:
+   “RUMAH 5”
+
+4. Rumah dengan nomor:
+   “RUMAH 8”
+
+5. Rumah dengan nomor:
+   “RUMAH 11”
+
+6. Sekolah dengan label “SEKOLAH”.
+
+7. Taman kota dengan label “TAMAN KOTA”.
+
+8. Kafe dengan label “CAFÉ”.
+
+9. Minimarket dengan label “MINIMARKET”.
+
+10. Kendaraan kurir kecil berwarna kuning-oranye.
+
+Gunakan elemen HTML atau Canvas untuk membuat peta. Jika menggunakan Canvas, pastikan peta tetap responsif dan memiliki ukuran logis tetap, misalnya 760 x 500, kemudian diskalakan dengan CSS.
+
+Tambahkan label jalan:
+
+- “Jl. Relasi”
+- “Jl. Fungsi”
+
+Tambahkan pesan di bagian bawah peta:
+
 “Cari stasiun oranye untuk mengambil paket.”
 
-### 3. Panel kanan: “PETA MISI”
+Pesan harus berubah sesuai kondisi permainan, misalnya:
 
-Panel berbentuk kartu tinggi dengan desain sama seperti panel kiri:
-- Border gelap
-- Sudut membulat
-- Header biru muda
-- Judul “🗺️ PETA MISI”
-- Subtitle “Tujuan pengiriman”
+- “Cari stasiun oranye untuk mengambil paket.”
+- “Paket berhasil diambil. Cari rumah nomor 5.”
+- “Masuk ke rumah tujuan untuk menjawab soal.”
+- “Jawaban benar! Lanjut ke level berikutnya.”
+- “Jawaban salah. Coba lagi.”
+
+D. Kolom kanan: PETA MISI
+
+Buat panel kanan dengan judul:
+
+“PETA MISI”
+
+Subjudul:
+
+“Tujuan pengiriman”
 
 Isi panel:
 
-1. Progress level:
-   - Label: “PROGRES LEVEL”
-   - Indikator: `0 / 4`
-   - Progress bar horizontal dengan warna hijau/kuning
+1. Progress bar:
+   “PROGRES LEVEL”
+   “0 / 4”
 
-2. Kartu aturan fungsi warna kuning:
+2. Progress bar harus bertambah setelah level berhasil diselesaikan.
+
+3. Kotak aturan fungsi:
+   “ATURAN FUNGSI”
+   “f(x) = 3x + 2”
+
+4. Bagian kontrol permainan:
+   “KONTROL PERMAINAN”
+
+   Tampilkan informasi:
+
+   - Panah atas: Bergerak ke atas
+   - Panah bawah: Bergerak ke bawah
+   - Panah kiri: Bergerak ke kiri
+   - Panah kanan: Bergerak ke kanan
+   - W A S D: Kontrol alternatif
+   - Ikon panah: Alternatif kontrol di layar
+
+5. Buat tombol D-pad di bawah panel:
+
+   - Tombol atas
+   - Tombol kiri
+   - Tombol bawah
+   - Tombol kanan
+
+Tombol D-pad harus dapat digunakan di perangkat desktop dan mobile.
+
+E. Footer tombol
+
+Di bagian bawah halaman buat tombol:
+
+- “💡 Beri Petunjuk”
+- “↻ Ulangi Level”
+- “Cara Bermain”
+- “Level Berikutnya →”
+
+Fungsi tombol:
+
+1. Beri Petunjuk:
+   Menampilkan petunjuk singkat tentang posisi objek tujuan tanpa langsung memberikan jawaban.
+
+2. Ulangi Level:
+   Mengembalikan level saat ini ke kondisi awal.
+
+3. Cara Bermain:
+   Membuka modal berisi aturan permainan.
+
+4. Level Berikutnya:
+   Hanya aktif jika level saat ini sudah berhasil diselesaikan.
+
+==================================================
+3. MEKANISME PERMAINAN
+==================================================
+
+Buat game state dengan status berikut:
+
+- waiting-for-package
+- package-collected
+- at-destination
+- question
+- level-complete
+- game-over
+
+Aturan gerakan:
+
+- Kendaraan bergerak menggunakan ArrowUp, ArrowDown, ArrowLeft, ArrowRight.
+- Kendaraan juga dapat dikendalikan dengan W, A, S, D.
+- Gerakan harus halus.
+- Gunakan keydown dan keyup agar kendaraan terus bergerak saat tombol ditekan.
+- Jangan menggunakan perpindahan instan.
+- Batasi kendaraan agar tidak keluar dari area peta.
+- Gunakan collision detection berbasis jarak atau kotak.
+
+Kontrol mobile:
+
+- Gunakan Pointer Events.
+- Saat tombol D-pad ditekan dan ditahan, kendaraan bergerak.
+- Saat tombol D-pad dilepas, kendaraan berhenti.
+- Jangan membuat sistem gerakan mobile yang berbeda dari keyboard. Semua input harus mengubah state tombol yang sama.
+
+Interaksi:
+
+1. Jika kendaraan mendekati stasiun paket:
+   - Tampilkan indikator interaksi.
+   - Jika tombol “E”, Enter, atau tombol interaksi ditekan, paket diambil.
+   - Status berubah menjadi package-collected.
+
+2. Setelah paket diambil:
+   - Tujuan rumah ditentukan berdasarkan hasil fungsi.
+   - Untuk level 1, tujuan adalah rumah nomor 5.
+   - Tampilkan garis atau penanda tujuan pada rumah yang benar.
+   - Jangan menandai rumah yang salah secara berlebihan agar permainan tetap menantang.
+
+3. Jika kendaraan mendekati rumah tujuan:
+   - Tampilkan modal soal matematika.
+   - Pemain harus menjawab soal.
+
+4. Jika jawaban benar:
+   - Tambah skor 100.
+   - Tambah progress level.
+   - Tampilkan animasi konfeti sederhana menggunakan CSS atau Canvas.
+   - Tampilkan pesan keberhasilan.
+   - Aktifkan tombol “Level Berikutnya”.
+   - Jika level terakhir selesai, tampilkan layar kemenangan.
+
+5. Jika jawaban salah:
+   - Kurangi 1 nyawa.
+   - Tampilkan feedback “Jawaban belum tepat, coba lagi.”
+   - Jangan langsung mengakhiri level kecuali nyawa habis.
+   - Jika nyawa habis, tampilkan layar game over.
+   - Sediakan tombol “Coba Lagi”.
+
+==================================================
+4. MODAL SOAL MATEMATIKA
+==================================================
+
+Buat modal pertanyaan yang menarik dan responsif.
+
+Modal berisi:
+
+- Judul “TEKA-TEKI FUNGSI”.
+- Soal matematika.
+- Persamaan f(x) = 3x + 2.
+- Input jawaban angka.
+- Tombol “Kirim Jawaban”.
+- Tombol tutup jika diperlukan.
+- Feedback benar atau salah.
+- Gunakan warna hijau untuk jawaban benar.
+- Gunakan warna merah muda atau merah lembut untuk jawaban salah.
+
+Contoh level 1:
+
+“Berapakah nilai f(1)?”
+
+Tampilkan:
+
+f(x) = 3x + 2
+
+Input:
+
+____
+
+Jawaban benar:
+
+5
+
+Pastikan input hanya menerima angka dan tombol Enter dapat digunakan untuk mengirim jawaban.
+
+==================================================
+5. DESAIN VISUAL
+==================================================
+
+Gunakan gaya visual:
+
+- Pastel.
+- Edukatif.
+- Ceria.
+- Ramah anak.
+- Modern.
+- Mirip board game digital.
+- Banyak kartu dengan border gelap.
+- Border-radius antara 12px sampai 20px.
+- Gunakan box-shadow ringan.
+- Gunakan border solid berwarna #243746 atau warna gelap yang serupa.
+- Gunakan latar belakang krem atau hijau sangat muda.
+- Gunakan warna:
+  - Krem: #fff8dc
+  - Hijau pastel: #b9ddb5
+  - Biru muda: #c8e8f4
+  - Kuning: #ffd66b
+  - Oranye: #f3a45b
+  - Merah muda: #f4a6a6
+  - Abu-abu jalan: #87999c
+  - Hijau tua: #5b9d70
+
+Gunakan CSS variables agar warna mudah diubah.
+
+Gunakan font fallback berikut:
+
+font-family:
+"Trebuchet MS",
+"Nunito",
+"Arial",
+sans-serif;
+
+Jangan mengandalkan font eksternal.
+
+==================================================
+6. RESPONSIVE DESIGN
+==================================================
+
+Game harus responsif.
+
+Desktop:
+
+- Gunakan grid tiga kolom.
+- Kolom kiri sekitar 22%.
+- Area tengah sekitar 56%.
+- Kolom kanan sekitar 22%.
+
+Tablet:
+
+- Gunakan grid dua kolom.
+- Panel kiri dan kanan dapat ditempatkan di bawah area peta.
+
+Mobile:
+
+- Gunakan satu kolom.
+- Header tetap rapi.
+- Panel misi berada di atas atau bawah peta.
+- Peta tidak boleh menyebabkan overflow horizontal.
+- Tombol kontrol dibuat lebih besar agar mudah disentuh.
+- Ukuran teks disesuaikan menggunakan clamp().
+- Semua elemen harus tetap dapat dibaca.
+- Gunakan min-height dan width yang fleksibel.
+- Jangan mengunci halaman dengan ukuran tetap yang menyebabkan tampilan rusak.
+
+Tambahkan:
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+==================================================
+7. ANIMASI
+==================================================
+
+Tambahkan animasi ringan:
+
+- Kendaraan bergerak dengan transisi halus.
+- Rumah tujuan memiliki efek pulse.
+- Paket memiliki efek bounce.
+- Tombol memiliki efek hover dan active.
+- Progress bar memiliki animasi pengisian.
+- Modal muncul dengan animasi scale dan fade.
+- Konfeti muncul saat jawaban benar.
+- Jangan menggunakan animasi yang terlalu berat.
+
+==================================================
+8. AKSESIBILITAS
+==================================================
+
+Pastikan:
+
+- Semua tombol memiliki aria-label.
+- Kontras teks dan latar belakang cukup jelas.
+- Navigasi keyboard dapat digunakan.
+- Input jawaban memiliki label.
+- Jangan hanya menggunakan warna untuk menunjukkan status.
+- Fokus keyboard terlihat jelas.
+- Tombol D-pad memiliki ukuran minimal 44px.
+- Tambahkan role yang sesuai untuk modal.
+- Modal dapat ditutup dengan tombol Escape.
+
+==================================================
+9. TEKNIS JAVASCRIPT
+==================================================
+
+Gunakan JavaScript terstruktur dengan objek atau class jika diperlukan.
+
+Buat fungsi seperti:
+
+- initGame()
+- resetLevel()
+- nextLevel()
+- updateGame()
+- renderGame()
+- handleKeyboardInput()
+- handleTouchInput()
+- collectPackage()
+- checkDestination()
+- openQuestionModal()
+- submitAnswer()
+- updateHUD()
+- showMessage()
+- showHint()
+- showHowToPlay()
+- createConfetti()
+- gameOver()
+- winGame()
+
+Gunakan requestAnimationFrame untuk game loop.
+
+Gunakan localStorage untuk menyimpan:
+
+- Skor tertinggi.
+- Level tertinggi yang telah selesai.
+- Preferensi suara jika fitur suara dibuat.
+
+Sediakan tombol mute atau suara opsional, tetapi jangan gunakan file suara eksternal. Jika membuat suara, gunakan Web Audio API sederhana atau jangan aktifkan suara secara default.
+
+==================================================
+10. KETENTUAN OUTPUT
+==================================================
+
+Berikan output berupa satu file lengkap:
+
+index.html
+
+Jangan memisahkan CSS ke style.css.
+Jangan memisahkan JavaScript ke script.js.
+Semua CSS harus berada di dalam tag <style>.
+Semua JavaScript harus berada di dalam tag <script>.
+Pastikan file dapat langsung dijalankan dengan membuka index.html di browser.
+Pastikan tidak ada error JavaScript di console.
+Pastikan seluruh tombol berfungsi.
+Pastikan game dapat dimainkan dari awal sampai selesai.
+Pastikan desain menyerupai screenshot yang diberikan.
+Tambahkan komentar singkat pada bagian HTML, CSS, dan JavaScript agar kode mudah dikembangkan.
