@@ -1,12 +1,3 @@
-Aku akan buat setiap level punya identitas kota sendiri, bukan hanya mengganti rumus: tema visual, warna jalan, landmark, suasana langit, dan posisi bangunan akan ikut berubah. Rumusnya juga akan naik dari linear ke kuadrat, bentuk kuadrat bergeser, hingga fungsi kubik.
-
-Aku akan ambil versi terbaru `index.html` yang sedang dipakai, lalu menuliskannya kembali sebagai satu file utuh agar bisa langsung kamu salin. Aku juga akan memastikan perubahan level dan tema peta terbaru ikut masuk.
-
-Berikut bentuk lengkap `index.html` terbaru. File ini sudah mencakup kontrol HP, lima level fungsi, tema peta berbeda di setiap level, landmark kota, skor, nyawa, dan teka-teki pilihan ganda.
-
-
-
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
